@@ -24,6 +24,7 @@ for i, frame in enumerate(clip.iter_frames(fps=frame_rate)):
 
 # 释放资源
 clip.close()
+<<<<<<< HEAD
 
 from utils import run_subprocess
 
@@ -72,3 +73,5 @@ def convert_video_format(video_path, output_path, output_format='mp4'):
     command = ['ffmpeg', '-i', video_path, f'{output_path}.{output_format}']
     run_subprocess(command)
 
+=======
+>>>>>>> origin/main

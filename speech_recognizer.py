@@ -24,4 +24,7 @@ response = client.recognize(config=config, audio=audio)
 # 打印识别结果
 for result in response.results:
     print('Transcript: {}'.format(result.alternatives[0].transcript))
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main

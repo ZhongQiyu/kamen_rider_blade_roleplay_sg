@@ -21,6 +21,7 @@ for result in data['results']:
                 start_time = word_info['startTime']
                 end_time = word_info['endTime']
                 print(f"Word: {word}, start time: {start_time}, end time: {end_time}")
+<<<<<<< HEAD
 
 # 伪代码，需要实际的图像和音频处理代码
 def create_dataset(frames_folder, audio_file):
@@ -92,3 +93,5 @@ if __name__ == "__main__":
     # 创建并保存数据集
     create_dataset(frames_folder, audio_output, text_data, additional_data, dataset_output)
 
+=======
+>>>>>>> origin/main

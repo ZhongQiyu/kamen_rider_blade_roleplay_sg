@@ -29,6 +29,7 @@ print(f"Sentiment polarity: {sentiment}")
 # 模拟用户反馈，这里简单使用正面或负面
 user_feedback = "positive" if sentiment > 0 else "negative"
 agent.feedback_loop(user_feedback, text)
+<<<<<<< HEAD
 
 from sklearn.linear_model import SGDClassifier
 
@@ -41,3 +42,5 @@ model = SGDClassifier()
 # 在新数据上迭代训练
 for X_partial, y_partial in generate_partial_data():
     model.partial_fit(X_partial, y_partial, classes=np.unique(y_train))
+=======
+>>>>>>> origin/main
