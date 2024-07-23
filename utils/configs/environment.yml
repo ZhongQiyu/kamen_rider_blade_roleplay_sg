@@ -1,0 +1,10 @@
+name: kamen-rider-blade-roleplay
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+    - torch
+    - transformers
+    - pysrt
