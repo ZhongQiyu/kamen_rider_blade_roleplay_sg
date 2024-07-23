@@ -1,0 +1,5 @@
+{
+  "model_path": "path/to/model",
+  "tokenizer_path": "path/to/tokenizer",
+  "device": "cuda"
+}
