@@ -1,37 +1,33 @@
-# agent_comm
+# Description
 
-### Description
-Communicates between agents asynchronously and facilitates multi-agent collaboration.
-
-
-
-# data_processor API Documentation
+## Modules
+We have agent_comm that communicates between agents asynchronously and facilitates multi-agent collaboration.
 
 ## Description
-Processes input data for analysis and supports asynchronous data processing for multi-agent systems.
+In the meantime, data_processor rocesses input data for analysis and supports asynchronous data processing for multi-agent systems.
 
-### GET
+### GET (data_processor)
 **Description**: Retrieves processed data.
 **Parameters**:
 - `data_id` (str): The unique identifier for the data being retrieved.
 **Response**:
 - `processed_data` (JSON): The processed data in JSON format.
 
-### GET
+### GET (agent_comm)
 **Description**: Retrieves messages for the specified agent.
 **Parameters**:
 - `agent_id` (str): The unique identifier for the agent whose messages are being retrieved.
 **Response**:
 - `messages` (JSON): A list of messages received by the agent.
 
-### POST
+### POST (data_processor)
 **Description**: Submits data for processing.
 **Parameters**:
 - `raw_data` (JSON): The raw data to be processed.
 **Response**:
 - `processing_id` (str): The unique identifier for the processing job.
 
-### POST
+### POST (agent_comm)
 **Description**: Initiates communication between agents.
 **Parameters**:
 - `agent_id` (str): The unique identifier for the agent initiating the communication.
@@ -39,7 +35,7 @@ Processes input data for analysis and supports asynchronous data processing for 
 **Response**:
 - `confirmation_message` (str): A message confirming that the communication was initiated.
 
-### POST (Asynchronous)
+### POST (Asynchronous) (data_processor)
 **Description**: Submits data for asynchronous processing.
 **Parameters**:
 - `raw_data` (JSON): The raw data to be processed.
@@ -47,7 +43,7 @@ Processes input data for analysis and supports asynchronous data processing for 
 **Response**:
 - `processing_id` (str): The unique identifier for the asynchronous processing job.
 
-### POST (Asynchronous)
+### POST (Asynchronous) (agent_comm)
 **Description**: Initiates asynchronous communication between agents.
 **Parameters**:
 - `agent_id` (str): The unique identifier for the agent initiating the communication.
@@ -56,14 +52,14 @@ Processes input data for analysis and supports asynchronous data processing for 
 **Response**:
 - `confirmation_message` (str): A message confirming that the asynchronous communication was initiated.
 
-### GET (Processing Status)
+### GET (Processing Status) (data_processor)
 **Description**: Retrieves the status of a processing job.
 **Parameters**:
 - `processing_id` (str): The unique identifier for the processing job.
 **Response**:
 - `status` (str): The current status of the processing job (e.g., 'pending', 'processing', 'completed').
 
-### GET (Processing Result)
+### GET (Processing Result) (agent_comm)
 **Description**: Retrieves the result of a completed processing job.
 **Parameters**:
 - `processing_id` (str): The unique identifier for the processing job.
