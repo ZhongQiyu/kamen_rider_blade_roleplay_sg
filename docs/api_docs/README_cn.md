@@ -58,60 +58,314 @@ pip install -r requirements.txt
 
 
 
-# API Documentation
+#### 中文版
 
-## Overview
+# 大模型训练的本地硬件配置指南
 
-This document provides detailed information about the interfaces of the Stage Play LLM API. It is intended for developers who need to integrate the LLM models into stage play applications.
+## 项目概述
 
-# Methodologies
-<div align="center">
-<img src="./assets/method.gif" alt="Method" title="method">
-</div>
+本项目旨在为舞台剧开发一个大型语言模型（LLM），其中包含四到十二个独立的智能体，每个智能体能够理解和生成与其角色相关的对话和动作。
 
-## Models
+### 目标
 
-## Reproducing the Evaluation
+- 训练一个包含四到十二个智能体的语言模型。
+- 每个智能体应能够根据剧情和角色背景准确生成对话。
+- 实现智能体之间的有效互动，以支持复杂剧情的展开。
 
-### 1. Clone the Repo
+### 最终交付成果
 
-### 2. Download the Model
+- 自主表演的智能体。
+- 完整的部署解决方案，包括后端模型部署和前端交互界面。
 
-### 3. Install Libraries
+## 技术要求
 
-### 4. Run
+### 软件要求
 
-## Authentication
+- **Python 3.8+**：主要编程语言。
+- **TensorFlow 2.x / PyTorch 1.8+**：用于模型训练和推理。
+- **Flask/Django**：用于API开发和部署。
+- **Docker**：用于应用打包和部署。
+- **torch**：用于动态神经网络的深度学习框架。
+- **transformers**：用于最先进的自然语言处理的库。
+- **pysrt**：用于解析和修改SubRip (.srt)字幕文件的Python库。
 
-- **Method**: API Key
-- **Key Location**: Header
+### 硬件要求
 
-```http
-GET /api/resource HTTP/1.1
-Host: example.com
-Authorization: Api-Key {your-api-key-here}
+- **GPU**：NVIDIA RTX 2080 Ti或更高，至少4块。
+- **CPU**：Intel i7或更高。
+- **RAM**：至少64GB。
+- **存储**：SSD至少2TB。
+
+### 依赖库
+
+- 详见`requirements.txt`文件中列出的所有必需Python库。
+
+```plaintext
+# requirements.txt
+
+tensorflow>=2.x
+torch>=1.8
+transformers
+flask
+django
+docker
+pysrt
 ```
 
-## Reference
 
-## Acknowledgement
 
-https://cs.union.edu/csc120/
+## 功能要求
 
-# Introduction
+### 智能体功能
 
-All characters in the TV Series of Kamen Rider Blade (仮面ライダー剣 in 2004).
+- **语言理解**：理解复杂的语言输入并作出回应。
+- **情感表达**：在对话中表达和理解情感。
+- **记忆能力**：记住之前的对话和动作。
 
-I inherit the work from the first training session in InternLM (书生·浦语) in 2024 to build this system.
+### 系统功能
 
-This is a repository for building the agent system that enables chatting features with the copies the stage.
+- **用户交互界面**：一个简洁的界面，允许用户进行互动并观看表演。
+- **性能监控**：监控智能体和系统的性能。
 
-It mirrors my understanding towards a large part of my life so far, while working as an AI project that attempts to chain my learning path in computer science over the years too.
+## 安全性和合规性
 
-運命の切り札...
+- **符合GDPR和其他数据保护法规。**
+- **系统具有防止数据泄漏的安全措施。**
 
-「やらなければいけないことがあります。私たちは手を組み、必勝の陣形で前に進んでいくでしょう。」
+## 测试要求
 
-戦さ！
+- **单元测试**：测试关键功能。
+- **集成测试**：确保系统组件能够协同工作。
+- **性能测试**：高负载下的系统性能。
+- **用户验收测试**：确保符合用户期望和要求。
 
-自分との戦いには、終わりがありません。
+## 里程碑和交付进度
+
+- **2024年5月**：系统框架和智能体原型完成。
+- **2024年6月**：完成智能体训练和初步测试。
+- **2024年7月**：系统集成和全面测试。
+- **2024年8月**：用户验收测试和部署准备。
+- **2024年9月**：项目正式上线。
+
+
+
+# 假面骑士剑多智能体系统使用指南
+
+## 1. 系统概述
+
+这个多智能体系统是基于日本特摄剧《假面骑士剑》的主要角色设计的，旨在提供一个多方面的问题解决和决策支持工具。系统包括四个核心智能体，每个智能体模拟剧中角色的特点和能力，以帮助用户处理复杂的问题和情况。
+
+## 2. 智能体介绍
+
+### 2.1 剑崎一真智能体
+- 主要功能：决策和执行
+- 特点：勇敢，正义感强，高适应力
+- 使用场景：需要快速决策和果断行动的情况
+
+### 2.2 橘朔也智能体
+- 主要功能：战略分析和风险评估
+- 特点：冷静，理性，谨慎
+- 使用场景：需要详细分析和长期规划的情况
+
+### 2.3 相川始智能体
+- 主要功能：信息收集和处理
+- 特点：敏锐，观察力强，灵活
+- 使用场景：需要广泛信息收集和详细洞察的情况
+
+### 2.4 睦月智能体
+- 主要功能：支持协调和情感分析
+- 特点：温和，富有同情心，洞察力强
+- 使用场景：涉及人际关系和情感因素的情况
+
+## 3. 系统使用方法
+
+### 3.1 系统初始化
+
+```python
+from blade_agents import BladeAgentSystem
+
+system = BladeAgentSystem()
+system.initialize()
+```
+
+### 3.2 设置问题或任务
+
+```python
+problem = "如何改善公司内部的沟通效率？"
+system.set_task(problem)
+```
+
+### 3.3 激活智能体并获取反馈
+
+```python
+# 剑崎一真智能体的决策
+decision = system.activate_agent("kazuki")
+print("剑崎的决策:", decision)
+
+# 橘朔也智能体的分析
+analysis = system.activate_agent("tachibana")
+print("橘的分析:", analysis)
+
+# 相川始智能体的信息
+intel = system.activate_agent("aikawa")
+print("相川的信息:", intel)
+
+# 睦月智能体的协调建议
+coordination = system.activate_agent("mutsuki")
+print("睦月的协调建议:", coordination)
+```
+
+### 3.4 综合分析
+
+```python
+final_solution = system.synthesize_solutions()
+print("最终解决方案:", final_solution)
+```
+
+## 4. 应用场景
+
+### 4.1 项目管理
+
+```python
+system.set_task("如何优化软件开发项目的进度？")
+```
+
+### 4.2 市场策略
+
+```python
+system.set_task("应采用什么样的营销策略来推广新产品？")
+```
+
+### 4.3 危机管理
+
+```python
+system.set_task("公司应如何应对公关危机？")
+```
+
+### 4.4 团队建设
+
+```python
+system.set_task("如何提高团队凝聚力和工作效率？")
+```
+
+## 5. 注意事项
+
+每个智能体基于特定视角提供建议。
+最终决策应考虑所有输出。系统的建议仅供参考。
+实际执行应基于具体情况判断。
+定期更新系统的知识库，以确保智能体提供最新和最相关的建议。
+在做出高度机密或重要决策时，建议结合人类专家的意见。
+
+## 6. 定制与扩展
+
+### 6.1 调整智能体参数
+
+```python
+system.customize_agent("kazuki", risk_tolerance=0.8)
+system.customize_agent("tachibana", analysis_depth="high")
+```
+
+### 6.2 添加新功能
+
+```python
+system.add_new_capability("aikawa", "social_media_analysis")
+```
+
+### 6.3 创建新智能体
+
+```python
+system.create_new_agent("hirose", role="技术专家")
+```
+
+## 7. 故障排除
+
+如果系统响应缓慢或结果异常，请尝试以下步骤：
+- 重新初始化系统
+- 确保输入的问题描述清晰具体
+- 调整代理参数
+- 更新系统知识库
+- 联系技术支持团队寻求帮助
+
+## 8. 结论
+
+假面骑士剑多智能体系统提供了解决复杂问题的独特视角。
+通过模拟不同角色的思维模式，帮助用户全面分析问题并做出更精确的决策。
+希望这个系统成为您工作中的强大助手，带来新的想法和灵感。
+如有任何问题或建议，请随时联系我们的支持团队。祝您使用愉快！
+
+
+
+
+
+
+
+# 基于大模型的对话机器人和多智能体系统的评估指标
+
+以下是用于评估对话机器人和多智能体系统性能的两种不同大小的Gemma模型的关键参数和参数计数。
+
+## 关键模型参数
+
+| 参数                       | 2B         | 7B         |
+|----------------------------|------------|------------|
+| d_model                    | 2048       | 3072       |
+| 层数                        | 18         | 28         |
+| 前馈隐藏维度                | 32768      | 49152      |
+| 头数                        | 8          | 16         |
+| KV头数                      | 1          | 16         |
+| 头大小                      | 256        | 256        |
+| 词汇表大小                  | 256128     | 256128     |
+
+**表1 | 不同大小Gemma模型的关键参数。**
+
+## 参数计数
+
+| 模型   | 嵌入参数               | 非嵌入参数               |
+|--------|------------------------|--------------------------|
+| 2B     | 524,550,144            | 1,981,884,416            |
+| 7B     | 786,825,216            | 7,751,248,896            |
+
+**表2 | 不同大小Gemma模型的参数计数。**
+
+## 评估指标
+
+### 1. 性能指标
+
+| 指标                       | 描述                                                         |
+|----------------------------|--------------------------------------------------------------|
+| 训练速度                   | 每个epoch所需的时间，单位为小时或分钟。                               |
+| 推理速度                   | 每秒处理的请求数。                                               |
+| GPU使用率                  | 训练和推理过程中GPU的使用率，通常以百分比表示。                            |
+
+### 2. 模型准确性指标
+
+| 指标                       | 描述                                                         |
+|----------------------------|--------------------------------------------------------------|
+| 精确率                     | 模型预测正确的正样本占所有预测为正样本的比例。                               |
+| 召回率                     | 模型预测正确的正样本占所有实际正样本的比例。                               |
+| F1分数                     | 精确率和召回率的调和平均数，用于平衡精确率和召回率的评价指标。                      |
+| pass@1                     | 测量模型在一次尝试中返回正确结果的能力，通常用于评估模型的回答准确性。            |
+
+### 3. 资源利用指标
+
+| 指标                       | 描述                                                         |
+|----------------------------|--------------------------------------------------------------|
+| 内存使用率                 | 训练和推理过程中内存的使用率。                                     |
+| 磁盘I/O                    | 训练和推理过程中磁盘读写速率，通常以MB/s表示。                           |
+| 网络带宽                   | 多节点分布式训练时，节点间通信的网络带宽，通常以Gbps表示。                    |
+
+### 4. 可靠性和稳定性指标
+
+| 指标                       | 描述                                                         |
+|----------------------------|--------------------------------------------------------------|
+| 崩溃率                     | 模型训练或推理过程中发生崩溃的频率。                                    |
+| 重启次数                   | 模型在训练或推理过程中需要重启的次数。                                |
+| 错误率                     | 模型训练或推理过程中发生错误的频率。                                  |
+
+### 5. 用户体验指标
+
+| 指标                       | 描述                                                         |
+|----------------------------|--------------------------------------------------------------|
+| 响应时间                   | 用户发送请求到收到响应的平均时间，单位为毫秒。                             |
+| 用户满意度                 | 用户对模型回答的满意程度，通常通过问卷或评分系统收集。                          |
+
+以上指标可以帮助全面评估基于大模型的对话机器人和多智能体系统的性能、准确性、资源利用、可靠性和用户体验。根据不同的应用场景和需求，选择合适的指标进行评估和优化。
