@@ -1,7 +1,10 @@
+# word_cloud.py
+
 import pandas as pd
 import jieba
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud, ImageColorGenerator
+import networkx as nx
 
 class Action:
     def __init__(self, file_name):
@@ -25,7 +28,31 @@ class Action:
         for i in data_after_stop:
             data_after_stop_flaten.extend(i)
         word_freq = pd.Series(data_after_stop_flaten).value_counts()
+        
+        # 创建知识图谱
+        self.create_knowledge_graph(word_freq)
+        
         return word_freq
+
+    def create_knowledge_graph(self, word_freq):
+        # 创建图结构
+        G = nx.Graph()
+        for word, freq in word_freq.items():
+            G.add_node(word, size=freq)
+        
+        # 这里可以根据需要定义边的创建规则
+        for word1 in word_freq.index:
+            for word2 in word_freq.index:
+                if word1 != word2 and self.some_similarity_function(word1, word2) > 0.5:
+                    G.add_edge(word1, word2)
+        
+        # 保存知识图谱
+        nx.write_gml(G, 'knowledge_graph.gml')
+
+    def some_similarity_function(self, word1, word2):
+        # 示例：基于某种规则计算词之间的相似度
+        # 这里可以使用文本相似度算法，如余弦相似度等
+        return 0.5  # 示例值，实际应根据需要计算
 
 class App:
     def __init__(self, word_freq):
@@ -34,23 +61,32 @@ class App:
     def draw(self):
         # 绘制词云图
         mask = plt.imread('InternLM.jpg')
-        # 创建词云图对象
         wc = WordCloud(font_path='./simkai.ttf', mask=mask, background_color='white',
                        max_words=500,
-                       max_font_size=150,  # 减小最大字体大小
-                       relative_scaling=0.6,  # 设置字体大小与词频的关联程度为0.4
+                       max_font_size=150,
+                       relative_scaling=0.6,
                        random_state=50,
-                       scale=2  # 增加 scale 值
-                       )  # font_path的相对路径
-        # 加载词频
+                       scale=2
+                       )
         wc.fit_words(self.word_freq)
-        image_color = ImageColorGenerator(mask)  # 设置生成词云的颜色，如去掉这两行则字体为默认颜色
+        image_color = ImageColorGenerator(mask)
         wc.recolor(color_func=image_color)
 
-        # plt 绘出词云图
-        plt.figure(figsize=(20, 20))  # 调整图片大小
-        plt.imshow(wc, interpolation='bicubic')  # 使用双三次插值
+        plt.figure(figsize=(20, 20))
+        plt.imshow(wc, interpolation='bicubic')
         plt.axis('off')
+        plt.show()
+
+    def draw_knowledge_graph(self):
+        # 读取知识图谱
+        G = nx.read_gml('knowledge_graph.gml')
+
+        # 绘制知识图谱
+        plt.figure(figsize=(15, 15))
+        pos = nx.spring_layout(G, k=0.5, iterations=50)  # 布局
+        sizes = [G.nodes[node]['size'] * 10 for node in G.nodes]  # 节点大小
+        nx.draw(G, pos, with_labels=True, node_size=sizes, font_size=12, node_color='lightblue', edge_color='gray')
+        plt.title('Knowledge Graph')
         plt.show()
 
 if __name__ == '__main__':
@@ -58,6 +94,7 @@ if __name__ == '__main__':
     # 实例化Action对象
     action = Action(file_name)
     word_freq = action.analyze()
-    # 实例化APP对象
+    # 实例化App对象
     app = App(word_freq)
     app.draw()
+    app.draw_knowledge_graph()
