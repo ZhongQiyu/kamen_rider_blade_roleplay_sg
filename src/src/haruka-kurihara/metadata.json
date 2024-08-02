@@ -1,0 +1,16 @@
+{
+  "name": "栗原 遥香 (Haruka Kurihara)",
+  "role": "天音の母 (Amane's Mother) - 天音的母亲",
+  "model_info": {
+    "checkpoints": "agents/haruka-kurihara/checkpoints",
+    "deployed": "agents/haruka-kurihara/deployed",
+    "fine_tuned": "agents/haruka-kurihara/fine_tuned",
+    "pre_trained": "agents/haruka-kurihara/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "天音の母であり、家族を守るために尽力する。Haruka Kurihara is Amane's mother who works hard to protect her family."
+}

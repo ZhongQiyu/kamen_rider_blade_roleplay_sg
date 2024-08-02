@@ -1,0 +1,16 @@
+{
+  "name": "深沢 小夜子 (Sayoko Fukasawa)",
+  "role": "サポートキャラクター (Supporting Character) - 支持角色",
+  "model_info": {
+    "checkpoints": "agents/sayoko-fukasawa/checkpoints",
+    "deployed": "agents/sayoko-fukasawa/deployed",
+    "fine_tuned": "agents/sayoko-fukasawa/fine_tuned",
+    "pre_trained": "agents/sayoko-fukasawa/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "物語の中での重要なサポートキャラクター。Sayoko Fukasawa is an important supporting character in the story."
+}

@@ -1,0 +1,16 @@
+{
+  "name": "山中 望美 (Nozomi Yamanaka)",
+  "role": "市民とサポート (Civilian and Support) - 平民与支援",
+  "model_info": {
+    "checkpoints": "agents/nozomi-yamanaka/checkpoints",
+    "deployed": "agents/nozomi-yamanaka/deployed",
+    "fine_tuned": "agents/nozomi-yamanaka/fine_tuned",
+    "pre_trained": "agents/nozomi-yamanaka/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "物語の中の平民であり、支援的な役割を果たす。Nozomi Yamanaka is a civilian in the story who plays a supportive role."
+}

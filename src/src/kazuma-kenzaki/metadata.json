@@ -1,0 +1,16 @@
+{
+  "name": "剣崎 一真 (Kazuma Kenzaki)",
+  "role": "仮面ライダーブレイド (Kamen Rider Blade) - 假面骑士剑",
+  "model_info": {
+    "checkpoints": "agents/kazuma-kenzaki/checkpoints",
+    "deployed": "agents/kazuma-kenzaki/deployed",
+    "fine_tuned": "agents/kazuma-kenzaki/fine_tuned",
+    "pre_trained": "agents/kazuma-kenzaki/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "主要な登場人物であり、仮面ライダーブレイドの力で不死者と戦う。Kazuma Kenzaki is the main character who fights against the Undead using the power of Kamen Rider Blade."
+}

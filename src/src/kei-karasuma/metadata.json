@@ -1,0 +1,16 @@
+{
+  "name": "烏丸 啓 (Kei Karasuma)",
+  "role": "メンターと創造者 (Mentor and Creator) - 导师与创始者",
+  "model_info": {
+    "checkpoints": "agents/kei-karasuma/checkpoints",
+    "deployed": "agents/kei-karasuma/deployed",
+    "fine_tuned": "agents/kei-karasuma/fine_tuned",
+    "pre_trained": "agents/kei-karasuma/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "プロトタイプの創造者であり、主人公たちを導く。Kei Karasuma is the creator of the prototypes and guides the protagonists in their battles."
+}
