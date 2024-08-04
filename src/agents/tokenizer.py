@@ -8,8 +8,14 @@ from datetime import datetime
 from collections import Counter
 from typing import List, Optional
 from nltk.tokenize import word_tokenize
-from janome.tokenizer import Tokenizer
+from janome.tokenizer import Tokenizer as JanomeTokenizer
+from fugashi import Tagger as FugashiTagger
 from pydantic import Field, BaseModel
+from google.cloud import speech
+from google.cloud.speech import enums, types
+import io
+from transformers import GPT2LMHeadModel, GPT2Tokenizer, TextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
+import torch
 
 # 定义一个基本的对话数据模型
 class Dialogue(BaseModel):
@@ -61,27 +67,33 @@ class KnowledgeBase:
     def average_utterances_per_dialogue(self) -> float:
         return sum(len(d.utterances) for d in self.dialogues) / len(self.dialogues) if self.dialogues else 0
 
-# 日语的句子分割函数
-def split_japanese_text(text: str) -> list:
-    sentences = text.split("。")
-    sentences = [sentence.strip() + "。" for sentence in sentences if sentence.strip()]
-    if sentences:
-        sentences[-1] = sentences[-1].strip("。")
-    return sentences
+# 日语文本处理工具类
+class TextUtilities:
+    @staticmethod
+    def split_japanese_text(text: str) -> list:
+        sentences = text.split("。")
+        sentences = [sentence.strip() + "。" for sentence in sentences if sentence.strip()]
+        if sentences:
+            sentences[-1] = sentences[-1].strip("。")
+        return sentences
 
-# 使用Janome进行日语文本分词
-def tokenize_japanese_text(text: str) -> list:
-    t = Tokenizer()
-    tokens = list(t.tokenize(text, wakati=True))
-    return tokens
+    @staticmethod
+    def process_asr_output(raw_asr_text: str) -> str:
+        return raw_asr_text.replace("\n", " ").strip()
 
-# 模拟ASR处理函数
-def process_asr_output(raw_asr_text: str) -> str:
-    return raw_asr_text.replace("\n", " ").strip()
+    @staticmethod
+    def tokenize_text(text: str) -> list:
+        tagger = FugashiTagger('-Owakati')
+        return tagger.parse(text).strip().split()
+
+    @staticmethod
+    def tokenize_japanese_janome(text: str) -> list:
+        tokenizer = JanomeTokenizer()
+        return list(tokenizer.tokenize(text, wakati=True))
 
 # 生成对话数据
 def generate_dialogue(asr_text: str) -> Dialogue:
-    utterances = split_japanese_text(asr_text)
+    utterances = TextUtilities.split_japanese_text(asr_text)
     dialogue_id = f"dlg_{random.randint(1000, 9999)}"
     return Dialogue(dialogue_id=dialogue_id, utterances=utterances)
 
@@ -89,15 +101,71 @@ def generate_dialogue(asr_text: str) -> Dialogue:
 def analyze_frequency(dialogues: List[str]):
     word_counts = Counter()
     for dialogue in dialogues:
-        words = tokenize_japanese_text(dialogue)
+        words = TextUtilities.tokenize_text(dialogue)
         word_counts.update(words)
     return word_counts.most_common(10)
 
+# Google Speech-to-Text处理函数
+def process_speech_to_text(audio_file_path: str) -> str:
+    client = speech.SpeechClient()
+
+    with io.open(audio_file_path, 'rb') as audio_file:
+        content = audio_file.read()
+        audio = types.RecognitionAudio(content=content)
+
+    config = types.RecognitionConfig(
+        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=16000,
+        language_code='en-US'
+    )
+
+    response = client.recognize(config=config, audio=audio)
+
+    return ' '.join([result.alternatives[0].transcript for result in response.results])
+
+# GPT-2角色对话数据微调
+def fine_tune_gpt2(dialogs: dict, model_name='gpt2'):
+    tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+
+    for role, lines in dialogs.items():
+        with open(f"{role}_lines.txt", "w", encoding="utf-8") as f:
+            for line in lines:
+                f.write(line + tokenizer.eos_token)
+
+        dataset = TextDataset(
+            tokenizer=tokenizer,
+            file_path=f"{role}_lines.txt",
+            block_size=128,
+        )
+
+        data_collator = DataCollatorForLanguageModeling(
+            tokenizer=tokenizer, mlm=False,
+        )
+
+        model = GPT2LMHeadModel.from_pretrained(model_name)
+
+        training_args = TrainingArguments(
+            output_dir=f'./{role}_finetuned_gpt2',
+            overwrite_output_dir=True,
+            num_train_epochs=5,
+            per_device_train_batch_size=4,
+            save_steps=10_000,
+            save_total_limit=2,
+            prediction_loss_only=True,
+        )
+
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            data_collator=data_collator,
+            train_dataset=dataset,
+        )
+
+        trainer.train()
+        model.save_pretrained(f'./{role}_finetuned_gpt2')
+
 # 主函数
 def main():
-    # 测试知识库的代码
-    kb = KnowledgeBase()
-
     # 禁用 SSL 证书验证
     try:
         _create_unverified_https_context = ssl._create_unverified_context
@@ -109,14 +177,17 @@ def main():
     # 确保 NLTK 资源已下载
     nltk.download('punkt')
 
+    # 测试知识库的代码
+    kb = KnowledgeBase()
+
     # 示例文本
     sample_text = "こんにちは、今日はいい天気ですね。公園に行きましょう。"
-    tokens = tokenize_japanese_text(sample_text)
+    tokens = TextUtilities.tokenize_japanese_janome(sample_text)
     print("Tokenized Text:", tokens)
 
     # 假设这是ASR的输出
     raw_asr_output = "今日の天気は素晴らしいですね。公園に散歩に行きましょう。あの花を見ましたか？とても綺麗です。"
-    processed_text = process_asr_output(raw_asr_output)
+    processed_text = TextUtilities.process_asr_output(raw_asr_output)
     dialogue = generate_dialogue(processed_text)
     kb.add_dialogue(dialogue)
     retrieved_dialogue = kb.get_dialogue(dialogue.dialogue_id)
