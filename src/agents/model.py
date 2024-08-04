@@ -189,3 +189,5 @@ def train_ner_model(texts, labels):
     trainer = Trainer(model=model, args=training_args, train_dataset=train_dataset)
     trainer.train()
     model.save_pretrained('./ner_model')
+
+    
