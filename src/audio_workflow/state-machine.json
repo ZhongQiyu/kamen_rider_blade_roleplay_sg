@@ -1,0 +1,22 @@
+{
+  "_comment": "This JSON file is used to define the state machine for audio processing.",
+  "StartAt": "AudioProcessing",
+  "States": {
+    "AudioProcessing": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:123456789012:function:processAudio",
+      "Next": "CheckTranscription"
+    },
+    "CheckTranscription": {
+      "_comment": "Wait for transcription to complete.",
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "CheckStatus"
+    },
+    "CheckStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:123456789012:function:checkTranscriptionStatus",
+      "End": true
+    }
+  }
+}

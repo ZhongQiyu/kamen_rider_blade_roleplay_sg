@@ -4,87 +4,86 @@ import boto3
 import ffmpeg
 import os
 
-def start_aws_workflow():
-    # 你可以在这里初始化AWS服务的配置，比如bucket_name, file_key等
-    bucket_name = 'your_bucket_name'
-    file_key = 'your_file_key'
-    local_file_path = '/tmp/concatenated.mp3'
-    
-    # 下载文件、拼接音频并上传到S3
-    lambda_handler(bucket_name, file_key, local_file_path)
-    
-    # 调用AWS Transcribe进行音频转录
-    transcribe_audio(bucket_name, local_file_path)
-    
-    # 如果需要，还可以在这里调用Comprehend进行文本分析
+# S3配置
+s3 = boto3.client('s3')
+transcribe = boto3.client('transcribe')
+bucket_name = 'your-s3-bucket'  # S3存储桶的名称
 
-def lambda_handler(bucket_name, file_key, local_file_path):
-    s3 = boto3.client('s3')
-    
-    # 下载文件
-    s3.download_file(bucket_name, file_key, '/tmp/' + file_key)
-    
-    # 拼接音频文件
-    ffmpeg.input('concat:/tmp/' + file_key).output(local_file_path).run()
-    
-    # 上传拼接后的文件到S3
-    s3.upload_file(local_file_path, bucket_name, 'concatenated/concatenated_audio.mp3')
+def lambda_handler(event=None, context=None):
+    try:
+        # 获取S3 Bucket和文件名
+        bucket_name = event['Records'][0]['s3']['bucket']['name']
+        file_key = event['Records'][0]['s3']['object']['key']
+        
+        logger.info(f"Processing file: {file_key} from bucket: {bucket_name}")
+        
+        # 下载文件
+        local_file_path = '/tmp/' + file_key
+        s3.download_file(bucket_name, file_key, local_file_path)
+        
+        # 拼接音频文件（假设只有一个文件，示例中无实际拼接步骤）
+        concatenated_file = '/tmp/concatenated.mp3'
+        ffmpeg.input(local_file_path).output(concatenated_file).run()
+        
+        # 上传拼接后的文件到S3
+        s3.upload_file(concatenated_file, bucket_name, 'concatenated/' + 'concatenated_audio.mp3')
+        
+        # 调用AWS Transcribe
+        transcribe.start_transcription_job(
+            TranscriptionJobName='transcription-job',
+            Media={'MediaFileUri': f's3://{bucket_name}/concatenated/concatenated_audio.mp3'},
+            MediaFormat='mp3',
+            LanguageCode='ja-JP'
+        )
+        
+        logger.info("Audio processing and transcription initiated successfully.")
+        
+    except Exception as e:
+        # 捕获异常并记录日志
+        logger.error(f"Error processing file {file_key}: {e}")
+        # 重新抛出异常以触发Step Functions的重试机制
+        raise e
 
-def transcribe_audio(bucket_name, local_file_path):
-    transcribe = boto3.client('transcribe')
+    return {
+        'statusCode': 200,
+        'body': 'Audio processed and transcribed.'
+    }
+
+# 下载并拼接音频文件
+def download_and_concatenate_audio(file_keys):
+    input_files = []
+    for file_key in file_keys:
+        s3.download_file(bucket_name, file_key, file_key)
+        input_files.append(file_key)
+    
+    output_file = 'output_audio.mp3'
+    ffmpeg.input('concat:' + '|'.join(input_files)).output(output_file).run()
+    return output_file
+
+# 拼接音频并上传到S3
+def concatenate_and_upload_audio(files_to_concatenate):
+    output_file = 'concatenated_audio.mp3'
+    ffmpeg.input('concat:' + '|'.join(files_to_concatenate)).output('/tmp/' + output_file).run()
+    s3.upload_file('/tmp/' + output_file, bucket_name, 'concatenated/' + output_file)
+    return output_file
+
+# 使用AWS Transcribe进行音频转录
+def transcribe_audio(s3_uri):
+    job_name = 'transcription-job'
     transcribe.start_transcription_job(
-        TranscriptionJobName='transcription-job',
-        Media={'MediaFileUri': f's3://{bucket_name}/concatenated/concatenated_audio.mp3'},
+        TranscriptionJobName=job_name,
+        Media={'MediaFileUri': s3_uri},
         MediaFormat='mp3',
         LanguageCode='ja-JP'
     )
-    # 这里可以添加获取转录结果的逻辑
-
-from xfyun_sdk import Inference
-
-def start_iflytek_workflow():
-    appid = "your_appid_here"
-    secret_key = "your_secret_key_here"
-    local_file_path = r'path_to_local_file'
     
-    # 创建RequestApi对象并执行所有API请求
-    api = RequestApi(appid=appid, secret_key=secret_key, upload_file_path=local_file_path)
-    api.all_api_request()
+    # 检查转录任务的状态
+    while True:
+        status = transcribe.get_transcription_job(TranscriptionJobName=job_name)
+        if status['TranscriptionJob']['TranscriptionJobStatus'] in ['COMPLETED', 'FAILED']:
+            break
+    return status
 
-class RequestApi(object):
-    def __init__(self, appid, secret_key, upload_file_path):
-        self.appid = appid
-        self.secret_key = secret_key
-        self.upload_file_path = upload_file_path
-        self.inference = Inference(appid=self.appid, secret_key=self.secret_key)  # 初始化推理对象
-
-    def run_inference(self):
-        # 这里是调用推理的方法
-        try:
-            result = self.inference.transcribe(self.upload_file_path)
-            print("推理结果:", result)
-            return result
-        except Exception as e:
-            print("推理失败:", str(e))
-            return None
-
-    def all_api_request(self):
-        # 这里继续之前的API调用流程
-        pre_result = self.prepare_request()
-        taskid = pre_result["data"]
-
-        # 上传并处理音频文件
-        self.upload_request(taskid=taskid, upload_file_path=self.upload_file_path)
-        self.merge_request(taskid=taskid)
-
-        # 获取并处理任务进度
-        while True:
-            progress = self.get_progress_request(taskid)
-            if progress['status'] == 9:
-                break
-            time.sleep(20)
-        
-        # 获取结果并调用推理
-        result = self.get_result_request(taskid=taskid)
-        inference_result = self.run_inference()
-        return inference_result
+# 本地测试运行
+if __name__ == "__main__":
+    lambda_handler()  # 运行Lambda逻辑
