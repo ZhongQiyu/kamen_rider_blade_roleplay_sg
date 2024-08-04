@@ -1,5 +1,15 @@
 # agent.py
 
+# 在chatbot或agents模块中
+from rag.retriever import retrieve_info
+from rag.generator import generate_response
+
+def handle_request(user_input):
+    relevant_data = retrieve_info(user_input)
+    response = generate_response(relevant_data)
+    return response
+
+
 from textblob import TextBlob
 
 class NlpAgent:
