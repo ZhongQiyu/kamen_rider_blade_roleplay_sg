@@ -1,14 +1,37 @@
 {
-  "_comment": "This JSON file is used to define the state machine for audio processing.",
-  "StartAt": "AudioProcessing",
+  "Comment": "A state machine that processes and transcribes audio files",
+  "StartAt": "ProcessAudioFiles",
   "States": {
-    "AudioProcessing": {
-      "Type": "Task",
-      "Resource": "arn:aws:lambda:us-west-2:123456789012:function:processAudio",
+    "ProcessAudioFiles": {
+      "Type": "Map",
+      "ItemsPath": "$.audioFiles",
+      "Iterator": {
+        "StartAt": "ProcessSingleAudioFile",
+        "States": {
+          "ProcessSingleAudioFile": {
+            "Type": "Task",
+            "Resource": "arn:aws:lambda:us-west-2:123456789012:function:processAudio",
+            "Retry": [
+              {
+                "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+                "IntervalSeconds": 2,
+                "MaxAttempts": 3,
+                "BackoffRate": 2.0
+              }
+            ],
+            "Catch": [
+              {
+                "ErrorEquals": ["States.ALL"],
+                "Next": "ErrorHandling"
+              }
+            ],
+            "End": true
+          }
+        }
+      },
       "Next": "CheckTranscription"
     },
     "CheckTranscription": {
-      "_comment": "Wait for transcription to complete.",
       "Type": "Wait",
       "Seconds": 60,
       "Next": "CheckStatus"
@@ -16,7 +39,18 @@
     "CheckStatus": {
       "Type": "Task",
       "Resource": "arn:aws:lambda:us-west-2:123456789012:function:checkTranscriptionStatus",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "ErrorHandling"
+        }
+      ],
       "End": true
+    },
+    "ErrorHandling": {
+      "Type": "Fail",
+      "Error": "AudioProcessingFailed",
+      "Cause": "The audio processing task failed."
     }
   }
 }
