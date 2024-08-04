@@ -1,3 +1,5 @@
+# model.py
+
 # 这里我们可以使用声音处理库如librosa，或者声音识别服务如Google Speech-to-Text API
 import librosa
 import soundfile as sf
@@ -190,4 +192,3 @@ def train_ner_model(texts, labels):
     trainer.train()
     model.save_pretrained('./ner_model')
 
-    
