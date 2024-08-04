@@ -2,17 +2,17 @@
 
 import torch
 import torch.nn.functional as F
-from transformers import BertTokenizer, BertForSequenceClassification, BertModel, RagTokenizer, RagRetriever, RagSequenceForGeneration, Trainer, TrainingArguments
+from transformers import BertTokenizer, BertForSequenceClassification, RagTokenizer, RagRetriever, RagSequenceForGeneration, Trainer, TrainingArguments
 from datasets import Dataset, load_metric
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
+
+# Text Processor for BERT and RAG
 class TextProcessor:
-    def __init__(self, data):
+    def __init__(self, data, tokenizer_name='cl-tohoku/bert-base-japanese'):
         self.data = data
         self.dataset = Dataset.from_dict(data)
-        self.tokenizer = BertTokenizer.from_pretrained('cl-tohoku/bert-base-japanese')
+        self.tokenizer = BertTokenizer.from_pretrained(tokenizer_name)
     
     def preprocess(self):
         return self.dataset.map(self._preprocess_function, batched=True)
@@ -20,6 +20,8 @@ class TextProcessor:
     def _preprocess_function(self, examples):
         return self.tokenizer(examples['texts'], truncation=True, padding=True)
 
+
+# BERT Trainer Class
 class BERTTrainer:
     def __init__(self, encoded_dataset, num_labels=2, num_epochs=3):
         self.tokenizer = BertTokenizer.from_pretrained('cl-tohoku/bert-base-japanese')
@@ -51,13 +53,16 @@ class BERTTrainer:
     def compute_metrics(self, p):
         return load_metric("accuracy").compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
+
+# Retriever Class using RAG
 class Retriever:
-    def __init__(self, model, tokenizer, dataset, window_size=1):
+    def __init__(self, model, tokenizer, dataset, retriever=None, window_size=1):
         self.model = model
         self.tokenizer = tokenizer
         self.dataset = dataset
         self.window_size = window_size
         self.dataset_embeddings = self.create_embeddings(dataset['texts'])
+        self.retriever = retriever
 
     def create_embeddings(self, texts):
         inputs = self.tokenizer(texts, return_tensors='pt', padding=True, truncation=True)
@@ -79,11 +84,22 @@ class Retriever:
             results.extend(self.dataset['texts'][start_idx:end_idx + 1])
         return results
 
+    def retrieve(self, query):
+        if self.retriever:
+            input_ids = self.tokenizer(query, return_tensors="pt")["input_ids"]
+            retrieved_docs = self.retriever(input_ids=input_ids, return_tensors="pt")
+            retrieved_texts = [doc for doc in retrieved_docs['retrieved_texts'][0]]
+            return retrieved_texts
+        else:
+            return self.retrieve_with_window(query)
+
+
+# Answer Generator using RAG
 class AnswerGenerator:
-    def __init__(self):
+    def __init__(self, retriever):
         self.rag_tokenizer = RagTokenizer.from_pretrained('facebook/rag-sequence-nq')
         self.rag_model = RagSequenceForGeneration.from_pretrained('facebook/rag-sequence-nq')
-        self.retriever = RagRetriever.from_pretrained('facebook/rag-sequence-nq', index_name='exact', passages_path=None)
+        self.retriever = retriever
 
     def generate_answer(self, query, retrieved_texts):
         context = " ".join(retrieved_texts)
@@ -92,8 +108,9 @@ class AnswerGenerator:
         answer = self.rag_tokenizer.batch_decode(outputs, skip_special_tokens=True)
         return answer
 
+
 def main():
-    # 示例日语对话文本数据集
+    # Example Japanese text dataset
     data = {
         "texts": [
             "これは情報検索タスクのための例文です。",
@@ -105,27 +122,27 @@ def main():
         "labels": [0, 1, 1, 0, 0]
     }
 
-    # 数据预处理
+    # Data Preprocessing
     text_processor = TextProcessor(data)
     encoded_dataset = text_processor.preprocess()
 
-    # 训练BERT模型
+    # Train BERT Model
     bert_trainer = BERTTrainer(encoded_dataset)
     bert_trainer.train()
 
-    # 检索功能
-    retriever = Retriever(bert_trainer.model, bert_trainer.tokenizer, text_processor.dataset)
+    # RAG Retriever and Retrieval
+    retriever_instance = Retriever(bert_trainer.model, bert_trainer.tokenizer, text_processor.dataset)
     query = "情報検索タスクに関する情報が必要です。"
-    retrieved_texts = retriever.retrieve_with_window(query)
-
-    print("Retrieved Texts with Context Window:")
+    retrieved_texts = retriever_instance.retrieve(query)
+    print("Retrieved Texts:")
     for text in retrieved_texts:
         print(text)
 
-    # 生成答案
-    answer_generator = AnswerGenerator()
+    # Generate Answer with RAG
+    answer_generator = AnswerGenerator(retriever_instance)
     answer = answer_generator.generate_answer(query, retrieved_texts)
     print("Generated Answer:", answer)
+
 
 if __name__ == "__main__":
     main()
