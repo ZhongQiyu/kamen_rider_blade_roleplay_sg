@@ -1,4 +1,4 @@
-# agent.py
+# multi_agent.py
 
 import random
 import time
