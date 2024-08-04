@@ -1,4 +1,56 @@
-# xtfj.py
+# asr.py
+
+from aws_workflow.transcribe_workflow import start_aws_workflow
+from iflytek_workflow.process_workflow import start_iflytek_workflow
+
+def main():
+    # 根据需求选择调用AWS或讯飞的流程
+    choice = input("选择处理流程 (1: AWS, 2: 讯飞): ")
+    if choice == '1':
+        start_aws_workflow()
+    elif choice == '2':
+        start_iflytek_workflow()
+    else:
+        print("无效选择")
+
+if __name__ == "__main__":
+    main()
+
+import boto3
+import ffmpeg
+import os
+
+s3 = boto3.client('s3')
+transcribe = boto3.client('transcribe')
+
+def lambda_handler(event, context):
+    bucket_name = event['Records'][0]['s3']['bucket']['name']
+    file_key = event['Records'][0]['s3']['object']['key']
+    
+    # 下载文件
+    s3.download_file(bucket_name, file_key, '/tmp/' + file_key)
+    
+    # 拼接逻辑 (假设有多文件)
+    files_to_concatenate = ['/tmp/' + file_key]  # 可以根据需求获取更多文件
+    concatenated_file = '/tmp/concatenated.mp3'
+    ffmpeg.input('concat:' + '|'.join(files_to_concatenate)).output(concatenated_file).run()
+    
+    # 上传拼接后的文件
+    s3.upload_file(concatenated_file, bucket_name, 'concatenated/' + 'concatenated_audio.mp3')
+    
+    # 调用Transcribe
+    transcribe.start_transcription_job(
+        TranscriptionJobName='transcription-job',
+        Media={'MediaFileUri': f's3://{bucket_name}/concatenated/concatenated_audio.mp3'},
+        MediaFormat='mp3',
+        LanguageCode='ja-JP'
+    )
+    
+    return {
+        'statusCode': 200,
+        'body': 'Audio processed and transcribed.'
+    }
+
 
 from xfyun_sdk import Inference
 

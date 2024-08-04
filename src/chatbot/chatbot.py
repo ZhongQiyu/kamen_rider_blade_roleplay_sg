@@ -1,4 +1,4 @@
-# main.py
+# chatbot.py
 
 # https://www.xfyun.cn/doc/asr/lfasr/API.html#%E6%8E%A5%E5%8F%A3%E8%AF%B4%E6%98%8E
 
