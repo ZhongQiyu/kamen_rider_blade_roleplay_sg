@@ -1,7 +1,64 @@
-# model_config.py
-
 {
-  "model_path": "path/to/model",
-  "tokenizer_path": "path/to/tokenizer",
-  "device": "cuda"
+  "models": {
+    "BERT": {
+      "model_path": "path/to/bert-base-uncased",
+      "tokenizer_path": "path/to/bert-base-uncased",
+      "device": "cuda",
+      "batch_size": 32,
+      "max_length": 512,
+      "use_fp16": true,
+      "logging_level": "INFO"
+    },
+    "BERT-CHINESE": {
+      "model_path": "path/to/bert-base-chinese",
+      "tokenizer_path": "path/to/bert-base-chinese",
+      "device": "cuda",
+      "batch_size": 32,
+      "max_length": 512,
+      "use_fp16": true,
+      "logging_level": "INFO"
+    },
+    "BERT-JAPANESE": {
+      "model_path": "path/to/cl-tohoku/bert-base-japanese",
+      "tokenizer_path": "path/to/cl-tohoku/bert-base-japanese",
+      "device": "cuda",
+      "batch_size": 32,
+      "max_length": 512,
+      "use_fp16": true,
+      "logging_level": "INFO"
+    },
+    "T5": {
+      "model_path": "path/to/t5-base",
+      "tokenizer_path": "path/to/t5-base",
+      "device": "cuda",
+      "batch_size": 16,
+      "max_length": 512,
+      "use_fp16": true,
+      "num_beams": 5,
+      "temperature": 0.7,
+      "logging_level": "INFO"
+    },
+    "T5-CHINESE": {
+      "model_path": "path/to/uer/t5-base-chinese-cluecorpussmall",
+      "tokenizer_path": "path/to/uer/t5-base-chinese-cluecorpussmall",
+      "device": "cuda",
+      "batch_size": 16,
+      "max_length": 512,
+      "use_fp16": true,
+      "num_beams": 5,
+      "temperature": 0.7,
+      "logging_level": "INFO"
+    },
+    "T5-JAPANESE": {
+      "model_path": "path/to/sonoisa/t5-base-japanese",
+      "tokenizer_path": "path/to/sonoisa/t5-base-japanese",
+      "device": "cuda",
+      "batch_size": 16,
+      "max_length": 512,
+      "use_fp16": true,
+      "num_beams": 5,
+      "temperature": 0.7,
+      "logging_level": "INFO"
+    }
+  }
 }
