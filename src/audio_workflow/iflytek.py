@@ -80,7 +80,7 @@ class RequestApi:
 
 # 主函数
 if __name__ == "__main__":
-    appid = "your_appid_here"
+    appid = "ccb83ac9"
     secret_key = "your_secret_key_here"
     local_file_path = r'path_to_local_file'
 
