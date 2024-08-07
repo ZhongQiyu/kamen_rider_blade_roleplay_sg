@@ -120,26 +120,28 @@ class ASRPipeline:
 if __name__ == "__main__":
     pipeline = ASRPipeline(
         s3_bucket='kamen-rider-blade-roleplay-sv',
-        aws_access_key_id='your-access-key-id',  # 替换为你的Access Key ID
-        aws_secret_access_key='your-secret-access-key',  # 替换为你的Secret Access Key
-        region_name='your-region'  # 替换为你选择的AWS区域
+        aws_access_key_id='AKIA5FTZCID7OWWDQLEW',  # 替换为你的Access Key ID
+        aws_secret_access_key='jgb6ttX/xQXEiXvfNQSNl5DS5pG/ek8LBioU+pw5',  # 替换为你的Secret Access Key
+        region_name='us-east-2'  # 替换为你选择的AWS区域
     )
 
     # 从S3文件夹下载所有文件
-    s3_folder = 'path/in/s3/to/your/folder/'  # 注意这里是文件夹路径
-    local_folder = '/path/to/local/folder'
+    s3_folder = 'clips/'  # 注意这里是文件夹路径
+    local_folder = '../data/clips/m4a'
     pipeline.download_folder_from_s3(s3_folder, local_folder)
 
     # 转换音频文件
     input_folder = local_folder
-    output_folder = '/path/to/local/output/folder'
+    output_folder = '../data/clips/wav'
     pipeline.convert_m4a_to_wav(input_folder, output_folder)
 
     # 选择并执行ASR处理流程
     choice = input("选择处理流程 (1: AWS, 2: 讯飞): ")
     pipeline.start_asr_workflow(choice)
 
+    """
     # 处理对话文件
     file_path = '/mnt/data/1.txt'
     all_dialogs = pipeline.handle_dialog_from_file(file_path)
     print(all_dialogs[:5])  # 打印前5条对话以检查输出
+    """
