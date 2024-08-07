@@ -119,10 +119,10 @@ class ASRPipeline:
 
 if __name__ == "__main__":
     pipeline = ASRPipeline(
-        s3_bucket='your-s3-bucket-name',
-        aws_access_key_id='your-access-key-id',
-        aws_secret_access_key='your-secret-access-key',
-        region_name='your-region'
+        s3_bucket='kamen-rider-blade-roleplay-sv',
+        aws_access_key_id='your-access-key-id',  # 替换为你的Access Key ID
+        aws_secret_access_key='your-secret-access-key',  # 替换为你的Secret Access Key
+        region_name='your-region'  # 替换为你选择的AWS区域
     )
 
     # 从S3文件夹下载所有文件
