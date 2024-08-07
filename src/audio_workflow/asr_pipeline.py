@@ -3,26 +3,35 @@
 import os
 import json
 import re
+import boto3
 from pydub import AudioSegment
 
 class ASRPipeline:
-    def __init__(self, config_file="model_config.json"):
+    def __init__(self, config_file="model_config.json", s3_bucket=None, aws_access_key_id=None, aws_secret_access_key=None, region_name=None):
         self.config_file = config_file
+        self.s3_bucket = s3_bucket
+        if s3_bucket:
+            self.s3_client = boto3.client(
+                's3',
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
+                region_name=region_name
+            )
+
+    # 从S3下载文件
+    def download_from_s3(self, s3_key, local_path):
+        self.s3_client.download_file(self.s3_bucket, s3_key, local_path)
+        print(f"Downloaded {s3_key} from S3 to {local_path}")
 
     # 音频转换功能
     def convert_m4a_to_wav(self, input_folder, output_folder):
-        # 检查输出文件夹是否存在，如果不存在则创建
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        # 遍历输入文件夹中的所有文件
         for filename in os.listdir(input_folder):
             if filename.endswith(".m4a"):
-                # 构建完整的文件路径
                 input_file_path = os.path.join(input_folder, filename)
                 output_file_path = os.path.join(output_folder, f"{os.path.splitext(filename)[0]}.wav")
-                
-                # 加载音频文件并转换为wav
                 audio = AudioSegment.from_file(input_file_path, format="m4a")
                 audio.export(output_file_path, format="wav")
                 print(f"Converted {filename} to {output_file_path}")
@@ -47,11 +56,9 @@ class ASRPipeline:
             print("无效选择")
 
     def start_aws_workflow(self):
-        # 这是AWS处理的占位符逻辑
         print("AWS workflow started.")
 
     def start_iflytek_workflow(self):
-        # 这是讯飞处理的占位符逻辑
         print("iFlytek workflow started.")
 
     # 处理对话文件
@@ -66,19 +73,16 @@ class ASRPipeline:
                 speaker_match = re.match(r'^说话人(\d+) (\d{2}:\d{2})', line)
                 if speaker_match:
                     if current_speaker is not None:
-                        # 当遇到新的说话人时，保存之前的对话
                         data.append({
                             'speaker': current_speaker,
                             'time': current_time,
                             'text': ' '.join(dialog).strip()
                         })
-                        dialog = []  # 重置对话列表
+                        dialog = []
                     current_speaker, current_time = speaker_match.groups()
                 else:
-                    # 收集对话行
                     dialog.append(line.strip())
 
-        # 确保最后一个对话被添加
         if current_speaker and dialog:
             data.append({
                 'speaker': current_speaker,
@@ -90,38 +94,40 @@ class ASRPipeline:
 
     # 加载数据
     def load_data(self, data_file):
-        # 加载数据的逻辑，返回加载后的数据
         with open(data_file, 'r', encoding='utf-8') as file:
             return json.load(file)
 
     # 解析训练数据
     def parse_train_data(self, data):
-        # 解析训练数据的逻辑
         pass
 
     # 解析 ASR 数据
     def parse_asr_data(self, data):
-        # 解析ASR数据的逻辑
         pass
 
 if __name__ == "__main__":
-    # 实例化ProcessingPipeline类
-    pipeline = ProcessingPipeline()
+    pipeline = ASRPipeline(
+        s3_bucket='your-s3-bucket-name',
+        aws_access_key_id='your-access-key-id',
+        aws_secret_access_key='your-secret-access-key',
+        region_name='your-region'
+    )
 
-    # 1. 转换音频文件
-    input_folder = '/path/to/your/m4a/files'  # 替换为你的m4a文件夹路径
-    output_folder = '/path/to/your/output/wav/files'  # 替换为你想保存wav文件的文件夹路径
+    # 从S3下载文件
+    s3_key = 'path/in/s3/to/your/file.m4a'
+    local_path = '/path/to/local/file.m4a'
+    pipeline.download_from_s3(s3_key, local_path)
+
+    # 转换音频文件
+    input_folder = '/path/to/local/input/folder'
+    output_folder = '/path/to/local/output/folder'
     pipeline.convert_m4a_to_wav(input_folder, output_folder)
 
-    # 2. 选择并执行ASR处理流程
+    # 选择并执行ASR处理流程
     choice = input("选择处理流程 (1: AWS, 2: 讯飞): ")
     pipeline.start_asr_workflow(choice)
 
-    # 3. 处理对话文件
+    # 处理对话文件
     file_path = '/mnt/data/1.txt'
     all_dialogs = pipeline.handle_dialog_from_file(file_path)
     print(all_dialogs[:5])  # 打印前5条对话以检查输出
-
-    # 4. 加载和解析数据（根据具体需求）
-    # 示例: data = pipeline.load_data("data_file.json")
-    # 示例: parsed_data = pipeline.parse_train_data(data)
