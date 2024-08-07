@@ -18,10 +18,22 @@ class ASRPipeline:
                 region_name=region_name
             )
 
-    # 从S3下载文件
-    def download_from_s3(self, s3_key, local_path):
-        self.s3_client.download_file(self.s3_bucket, s3_key, local_path)
-        print(f"Downloaded {s3_key} from S3 to {local_path}")
+    # 从S3下载文件夹中的所有文件
+    def download_folder_from_s3(self, s3_folder, local_folder):
+        # 列出S3文件夹中的所有文件
+        paginator = self.s3_client.get_paginator('list_objects_v2')
+        for page in paginator.paginate(Bucket=self.s3_bucket, Prefix=s3_folder):
+            for obj in page.get('Contents', []):
+                s3_key = obj['Key']
+                file_name = os.path.basename(s3_key)
+                local_path = os.path.join(local_folder, file_name)
+
+                # 创建本地文件夹（如果不存在）
+                os.makedirs(os.path.dirname(local_path), exist_ok=True)
+
+                # 下载文件
+                self.s3_client.download_file(self.s3_bucket, s3_key, local_path)
+                print(f"Downloaded {s3_key} from S3 to {local_path}")
 
     # 音频转换功能
     def convert_m4a_to_wav(self, input_folder, output_folder):
@@ -113,13 +125,13 @@ if __name__ == "__main__":
         region_name='your-region'
     )
 
-    # 从S3下载文件
-    s3_key = 'path/in/s3/to/your/file.m4a'
-    local_path = '/path/to/local/file.m4a'
-    pipeline.download_from_s3(s3_key, local_path)
+    # 从S3文件夹下载所有文件
+    s3_folder = 'path/in/s3/to/your/folder/'  # 注意这里是文件夹路径
+    local_folder = '/path/to/local/folder'
+    pipeline.download_folder_from_s3(s3_folder, local_folder)
 
     # 转换音频文件
-    input_folder = '/path/to/local/input/folder'
+    input_folder = local_folder
     output_folder = '/path/to/local/output/folder'
     pipeline.convert_m4a_to_wav(input_folder, output_folder)
 
