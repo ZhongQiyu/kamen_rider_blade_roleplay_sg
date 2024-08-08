@@ -1,0 +1,50 @@
+[
+    {
+        "dialogue_id": "dlg_4823",
+        "utterances": [
+            "\u4eca\u65e5\u306e\u5929\u6c17\u306f\u7d20\u6674\u3089\u3057\u3044\u3067\u3059\u306d\u3002",
+            "\u516c\u5712\u306b\u6563\u6b69\u306b\u884c\u304d\u307e\u3057\u3087\u3046\u3002",
+            "\u3042\u306e\u82b1\u3092\u898b\u307e\u3057\u305f\u304b\uff1f\u3068\u3066\u3082\u7dba\u9e97\u3067\u3059"
+        ],
+        "created_at": "2024-05-17 22:29:23.091338",
+        "participants": []
+    },
+    {
+        "dialogue_id": "dlg_4916",
+        "utterances": [
+            "\u4eca\u65e5\u306e\u5929\u6c17\u306f\u7d20\u6674\u3089\u3057\u3044\u3067\u3059\u306d\u3002",
+            "\u516c\u5712\u306b\u6563\u6b69\u306b\u884c\u304d\u307e\u3057\u3087\u3046\u3002",
+            "\u3042\u306e\u82b1\u3092\u898b\u307e\u3057\u305f\u304b\uff1f\u3068\u3066\u3082\u7dba\u9e97\u3067\u3059"
+        ],
+        "created_at": "2024-05-18 07:39:12.689819",
+        "participants": []
+    },
+    {
+        "dialogue_id": "dlg_4556",
+        "utterances": [
+            "\u4eca\u65e5\u306e\u5929\u6c17\u306f\u7d20\u6674\u3089\u3057\u3044\u3067\u3059\u306d\u3002",
+            "\u516c\u5712\u306b\u6563\u6b69\u306b\u884c\u304d\u307e\u3057\u3087\u3046\u3002",
+            "\u3042\u306e\u82b1\u3092\u898b\u307e\u3057\u305f\u304b\uff1f\u3068\u3066\u3082\u7dba\u9e97\u3067\u3059"
+        ],
+        "created_at": "2024-05-18 10:04:35.608897",
+        "participants": []
+    },
+    {
+        "dialogue_id": "dlg_3183",
+        "utterances": [
+            "\u4eca\u65e5\u306e\u5929\u6c17\u306f\u7d20\u6674\u3089\u3057\u3044\u3067\u3059\u306d\u3002",
+            "\u516c\u5712\u306b\u6563\u6b69\u306b\u884c\u304d\u307e\u3057\u3087\u3046\u3002"
+        ],
+        "created_at": "2024-05-18 15:05:57.964701",
+        "participants": []
+    },
+    {
+        "dialogue_id": "dlg_6990",
+        "utterances": [
+            "\u4eca\u65e5\u306e\u5929\u6c17\u306f\u7d20\u6674\u3089\u3057\u3044\u3067\u3059\u306d\u3002",
+            "\u516c\u5712\u306b\u6563\u6b69\u306b\u884c\u304d\u307e\u3057\u3087\u3046\u3002"
+        ],
+        "created_at": "2024-05-19 19:37:06.881084",
+        "participants": []
+    }
+]
