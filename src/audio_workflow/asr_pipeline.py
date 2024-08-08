@@ -56,6 +56,12 @@ class ASRPipeline:
             if filename.endswith(".m4a"):
                 input_file_path = os.path.join(input_folder, filename)
                 output_file_path = os.path.join(output_folder, f"{os.path.splitext(filename)[0]}.wav")
+                
+                # 检查目标文件是否已经存在
+                if os.path.exists(output_file_path):
+                    logger.info(f"File {output_file_path} already exists. Skipping conversion.")
+                    continue
+
                 try:
                     audio = AudioSegment.from_file(input_file_path, format="m4a")
                     audio.export(output_file_path, format="wav")
@@ -160,19 +166,19 @@ if __name__ == "__main__":
 
     # 从S3文件夹下载所有文件
     s3_folder = 'clips/'  # 注意这里是文件夹路径
-    local_folder = '../data/clips/m4a'
-    pipeline.download_folder_from_s3(s3_folder, local_folder)
+    # local_folder = '../data/clips/m4a'
+    local_folder = 'C:\\Users\\xiaoy\\Downloads\\legacy\\audio\\krb'
+    # output_folder = '../data/clips/wav'
+    # pipeline.download_folder_from_s3(s3_folder, local_folder)
 
     # 转换音频文件
     input_folder = local_folder
-    output_folder = '../data/clips/wav'
+    output_folder = 'C:\\Users\\xiaoy\\Documents\\kamen-rider-blade\\data\\audio\\wav'
     pipeline.convert_m4a_to_wav(input_folder, output_folder)
-
-    """
+    
     # 选择并执行ASR处理流程
     choice = input("选择处理流程 (1: AWS, 2: 讯飞): ")
     pipeline.start_asr_workflow(choice)
-    """
 
     """
     # 处理对话文件
