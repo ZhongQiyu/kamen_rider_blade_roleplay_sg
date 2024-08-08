@@ -3,14 +3,7 @@
   "Statement": [
     {
       "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::123456789012:user/YourUserName"
-      },
-      "Action": [
-        "s3:ListBucket",
-        "s3:GetObject",
-        "s3:PutObject"
-      ],
+      "Action": "s3:*",
       "Resource": [
         "arn:aws:s3:::kamen-rider-blade-roleplay-sv",
         "arn:aws:s3:::kamen-rider-blade-roleplay-sv/*"

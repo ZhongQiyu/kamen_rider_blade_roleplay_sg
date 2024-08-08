@@ -1,11 +1,15 @@
 # asr_pipeline.py
 
 import os
-import json
 import re
+import json
 import boto3
+import shutil
 import logging
 from pydub import AudioSegment
+
+# 手动指定FFmpeg路径
+AudioSegment.ffmpeg = "C:/ffmpeg/bin/ffmpeg.exe"
 
 # 配置日志记录
 logging.basicConfig(level=logging.INFO)
@@ -151,7 +155,7 @@ if __name__ == "__main__":
     )
 
     # 检查FFmpeg是否安装并可用
-    if not os.getenv('FFMPEG_PATH'):
+    if not shutil.which("ffmpeg"):
         raise EnvironmentError("FFmpeg is not installed or not found in the system path.")
 
     # 从S3文件夹下载所有文件
