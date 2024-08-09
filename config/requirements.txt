@@ -1,0 +1,32 @@
+# Core dependencies
+tensorflow>=2.6.0
+pandas>=1.3.2
+numpy>=1.21.1
+flask>=2.0.1
+
+# Rasa dependencies
+rasa
+absl-py==0.15.0
+
+# Additional common dependencies
+scipy>=1.7.1
+matplotlib>=3.4.2
+seaborn>=0.11.2
+scikit-learn>=0.24.2
+jupyterlab>=3.1.11
+
+# NLP dependencies
+transformers>=4.10.0
+datasets>=1.11.0
+
+# Web and API dependencies
+fastapi>=0.68.1
+uvicorn>=0.15.0
+
+# Development and testing tools
+pytest>=6.2.5
+black>=21.7b0
+flake8>=3.9.2
+
+# Additional dependencies (if any)
+# Add any other dependencies your project might require here

@@ -1,0 +1,16 @@
+{
+  "name": "広瀬 栞 (Shiori Hirose)",
+  "role": "科学者とサポート (Scientist and Support) - 科学家与支援",
+  "model_info": {
+    "checkpoints": "agents/shiori-hirose/checkpoints",
+    "deployed": "agents/shiori-hirose/deployed",
+    "fine_tuned": "agents/shiori-hirose/fine_tuned",
+    "pre_trained": "agents/shiori-hirose/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "科学者であり、技術的な支援と装備を提供する。Shiori Hirose is a scientist who provides technical support and equipment to the team."
+}

@@ -1,0 +1,16 @@
+{
+  "name": "橘 朔也 (Sakuya Tachibana)",
+  "role": "仮面ライダーギャレン (Kamen Rider Garren) - 假面骑士Garren",
+  "model_info": {
+    "checkpoints": "agents/sakuya-tachibana/checkpoints",
+    "deployed": "agents/sakuya-tachibana/deployed",
+    "fine_tuned": "agents/sakuya-tachibana/fine_tuned",
+    "pre_trained": "agents/sakuya-tachibana/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "経験豊富な仮面ライダーで、ギャレンの力を使って戦う。Sakuya Tachibana is a veteran Kamen Rider who fights using the power of Kamen Rider Garren."
+}

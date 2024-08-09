@@ -1,0 +1,10 @@
+# inference_tasks
+This is a temporatory repository placing the demonstrations of LLMs and graphics-intensive projects.
+
+https://blog.gslin.org/archives/2022/06/26/10763/git-%E7%9A%84%E3%80%8C%E7%81%BD%E9%9B%A3%E8%99%95%E7%90%86%E3%80%8D/
+
+https://www.ijcai.org/proceedings/2023/
+
+game theory AND role-playing AND IJCAI
+
+https://geministudios.com/

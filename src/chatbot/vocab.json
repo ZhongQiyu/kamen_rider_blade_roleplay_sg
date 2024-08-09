@@ -1,0 +1,48 @@
+{
+  "Ġthe": 220,
+  "Ġof": 360,
+  "Ġand": 367,
+  "Ġto": 563,
+  "Ġa": 618,
+  "Ġin": 879,
+  "Ġis": 1012,
+  "Ġit": 1125,
+  "Ġthat": 1240,
+  "Ġwith": 1396,
+  "Ġfor": 1586,
+  "Ġas": 1594,
+  "Ġon": 1669,
+  "Ġwas": 1768,
+  "Ġat": 1877
+}
+
+[PAD]
+[UNK]
+[CLS]
+[SEP]
+[MASK]
+。
+、
+...
+
+{
+  "add_prefix_space": true,
+  "bos_token": "<|endoftext|>",
+  "eos_token": "<|endoftext|>",
+  "model_max_length": 1024,
+  "special_tokens_map_file": "special_tokens_map.json",
+  "tokenizer_class": "GPT2Tokenizer",
+  "unk_token": "<|unk|>",
+  "do_lower_case": false,
+  "max_len": 512,
+  "vocab_file": "vocab.txt",
+  "merges_file": "merges.txt"
+}
+
+{
+  "cls_token": "[CLS]",
+  "mask_token": "[MASK]",
+  "pad_token": "[PAD]",
+  "sep_token": "[SEP]",
+  "unk_token": "[UNK]"
+}

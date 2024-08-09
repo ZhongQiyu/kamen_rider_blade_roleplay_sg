@@ -1,0 +1,33 @@
+# rasa_domain.yml
+
+version: "2.0"
+intents:
+  - greet
+  - respond
+  - ask_question
+
+entities:
+  - character
+
+slots:
+  character:
+    type: text
+
+responses:
+  utter_greet:
+    - text: "Hello! I am {character}. How can I help you today?"
+
+  utter_respond:
+    - text: "{character} says: {response}"
+
+  utter_ask_question:
+    - text: "{character} asks: {question}"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+actions:
+  - action_greet
+  - action_respond
+  - action_ask_question

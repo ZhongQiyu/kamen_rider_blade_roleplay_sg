@@ -1,0 +1,16 @@
+{
+  "name": "広瀬 義人 (Yoshito Hirose)",
+  "role": "敵対する科学者 (Antagonist Scientist) - 对立的科学家",
+  "model_info": {
+    "checkpoints": "agents/yoshito-hirose/checkpoints",
+    "deployed": "agents/yoshito-hirose/deployed",
+    "fine_tuned": "agents/yoshito-hirose/fine_tuned",
+    "pre_trained": "agents/yoshito-hirose/pre_trained"
+  },
+  "status": {
+    "trained": true,
+    "fine_tuned": true,
+    "deployed": true
+  },
+  "description": "主人公たちに立ち向かう科学者。Yoshito Hirose is a scientist who opposes the protagonists."
+}
