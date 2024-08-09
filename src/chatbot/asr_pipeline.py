@@ -186,3 +186,120 @@ if __name__ == "__main__":
     all_dialogs = pipeline.handle_dialog_from_file(file_path)
     logger.info(all_dialogs[:5])  # 打印前5条对话以检查输出
     """
+
+
+
+import os
+import re
+import json
+import boto3
+import logging
+from pydub import AudioSegment
+
+# 手动指定FFmpeg路径
+AudioSegment.ffmpeg = "C:/ffmpeg/bin/ffmpeg.exe"
+
+# 配置日志记录
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class ASRManager:
+    def __init__(self, s3_bucket, aws_access_key_id, aws_secret_access_key, region_name):
+        self.s3_bucket = s3_bucket
+        self.s3_client = boto3.client(
+            's3',
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            region_name=region_name
+        )
+
+    # 从S3下载文件夹中的所有文件
+    def download_folder_from_s3(self, s3_folder, local_folder):
+        paginator = self.s3_client.get_paginator('list_objects_v2')
+        try:
+            for page in paginator.paginate(Bucket=self.s3_bucket, Prefix=s3_folder):
+                for obj in page.get('Contents', []):
+                    s3_key = obj['Key']
+                    file_name = os.path.basename(s3_key)
+                    local_path = os.path.join(local_folder, file_name)
+
+                    # 创建本地文件夹（如果不存在）
+                    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+
+                    # 下载文件
+                    self.s3_client.download_file(self.s3_bucket, s3_key, local_path)
+                    logger.info(f"Downloaded {s3_key} from S3 to {local_path}")
+        except boto3.exceptions.S3UploadFailedError as e:
+            logger.error(f"Failed to download from S3: {str(e)}")
+            raise e
+
+    # 音频转换功能
+    def convert_m4a_to_wav(self, input_folder, output_folder):
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+
+        for filename in os.listdir(input_folder):
+            if filename.endswith(".m4a"):
+                input_file_path = os.path.join(input_folder, filename)
+                output_file_path = os.path.join(output_folder, f"{os.path.splitext(filename)[0]}.wav")
+
+                # 检查目标文件是否已经存在
+                if os.path.exists(output_file_path):
+                    logger.info(f"File {output_file_path} already exists. Skipping conversion.")
+                    continue
+
+                try:
+                    audio = AudioSegment.from_file(input_file_path, format="m4a")
+                    audio.export(output_file_path, format="wav")
+                    logger.info(f"Converted {filename} to {output_file_path}")
+                except Exception as e:
+                    logger.error(f"Failed to convert {filename}: {str(e)}")
+                    raise e
+
+class NLPManager:
+    def __init__(self, config_file="model_config.json"):
+        self.config_file = config_file
+
+    # 加载模型配置
+    def load_model_config(self, model_name):
+        if not os.path.exists(self.config_file):
+            raise FileNotFoundError(f"Config file {self.config_file} not found.")
+        with open(self.config_file, "r") as f:
+            try:
+                config = json.load(f)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Error decoding JSON from {self.config_file}: {str(e)}")
+        return config["models"].get(model_name)
+
+    # 处理对话文件
+    def handle_dialog_from_file(self, file_path):
+        data = []
+        current_speaker = None
+        current_time = None
+        dialog = []
+
+        with open(file_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                speaker_match = re.match(r'^说话人(\d+) (\d{2}:\d{2})', line)
+                if speaker_match:
+                    if current_speaker is not None:
+                        data.append({
+                            'speaker': current_speaker,
+                            'time': current_time,
+                            'text': ' '.join(dialog).strip()
+                        })
+                        dialog = []
+                    current_speaker, current_time = speaker_match.groups()
+                else:
+                    dialog.append(line.strip())
+
+        if current_speaker and dialog:
+            data.append({
+                'speaker': current_speaker,
+                'time': current_time,
+                'text': ' '.join(dialog).strip()
+            })
+
+        return data
+
+# 这里可以继续增加其他NLP相关的功能
