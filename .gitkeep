@@ -1,6 +1,0 @@
-# 使用 `find` 命令递归搜索当前目录下的所有空文件夹
-
-find . -type d -empty -not -path "./.git/*" | while read -r dir; do
-  # 为每个空文件夹创建 `.gitkeep` 文件
-  touch "$dir/.gitkeep"
-done

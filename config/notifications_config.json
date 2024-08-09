@@ -1,8 +1,0 @@
-{
-  "LambdaFunctionConfigurations": [
-    {
-      "LambdaFunctionArn": "arn:aws:lambda:us-west-2:123456789012:function:processAudio",
-      "Events": ["s3:ObjectCreated:*"]
-    }
-  ]
-}
